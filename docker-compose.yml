@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: loadguard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-loadguard}
+      POSTGRES_DB: loadguard
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loadguard"]
+      interval: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        INSTALL_YOLO: ${INSTALL_YOLO:-true}
+    environment:
+      LG_DATABASE_URL: postgresql+psycopg://loadguard:${POSTGRES_PASSWORD:-loadguard}@db:5432/loadguard
+      LG_DETECTOR: ${LG_DETECTOR:-auto}
+      LG_SEED_DEMO: ${LG_SEED_DEMO:-true}
+    volumes:
+      - appdata:/data
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
+  appdata:

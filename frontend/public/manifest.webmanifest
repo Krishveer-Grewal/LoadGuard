@@ -1,0 +1,9 @@
+{
+  "name": "LoadGuard Handler",
+  "short_name": "LoadGuard",
+  "start_url": "/handler",
+  "display": "standalone",
+  "background_color": "#14171c",
+  "theme_color": "#14171c",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

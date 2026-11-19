@@ -1,0 +1,2 @@
+# Optional: pre-trained YOLO detection (YOLO11 / YOLO-World). No custom training required.
+ultralytics>=8.3.0
