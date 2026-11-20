@@ -133,7 +133,7 @@ export default function HandlerApp() {
     <Box sx={{ maxWidth: 520, mx: "auto", p: 1.5, pb: 6, minHeight: "100vh", overflowX: "hidden" }}>
       <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
         <img src="/icon.svg" width={30} height={30} alt="" />
-        <Typography variant="h6" sx={{ flex: 1, fontWeight: 800 }}>LoadGuard</Typography>
+        <Typography variant="h6" sx={{ flex: 1, fontWeight: 800 }}>Load<Box component="span" sx={{ color: "primary.main" }}>Guard</Box></Typography>
         <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: connected ? "success.main" : "error.main" }} />
       </Stack>
 

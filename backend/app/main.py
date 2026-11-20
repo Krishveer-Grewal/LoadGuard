@@ -1,4 +1,4 @@
-"""LoadGuard AI — FastAPI application."""
+"""LoadGuard — FastAPI application."""
 from __future__ import annotations
 
 import asyncio
@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
     monitor.stop_all()
 
 
-app = FastAPI(title="LoadGuard AI", version="1.0.0",
+app = FastAPI(title="LoadGuard", version="1.0.0",
               description="Real-time trailer load quality monitoring", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins.split(","), allow_methods=["*"],
                    allow_headers=["*"])

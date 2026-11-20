@@ -1,4 +1,4 @@
-# LoadGuard AI — Real-Time Trailer Load Quality Monitoring
+# LoadGuard — Real-Time Trailer Load Quality Monitoring
 
 LoadGuard watches package walls being built inside trailers. It works out each wall's structure from camera frames, checks it against loading best practices, scores it, explains every problem in plain language, and pushes corrective guidance to handlers and managers in real time.
 

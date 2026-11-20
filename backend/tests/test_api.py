@@ -58,7 +58,7 @@ def test_end_to_end_api():
 
         assert "rows" in client.get("/api/analytics/shifts").json()
         assert "highlights" in client.get("/api/reports/weekly").json()
-        assert client.get("/api/reports/weekly?format=csv").text.startswith("LoadGuard AI weekly report")
+        assert client.get("/api/reports/weekly?format=csv").text.startswith("LoadGuard weekly report")
 
         with client.websocket_connect("/ws") as ws:
             assert ws.receive_json()["type"] == "hello"

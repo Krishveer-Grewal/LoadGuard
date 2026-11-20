@@ -260,7 +260,7 @@ def weekly_report_csv(week_offset: int = 0) -> str:
     r = weekly_report(week_offset)
     buf = io.StringIO()
     w = csv.writer(buf)
-    w.writerow(["LoadGuard AI weekly report", r["weekStart"], r["weekEnd"]])
+    w.writerow(["LoadGuard weekly report", r["weekStart"], r["weekEnd"]])
     w.writerow([])
     w.writerow(["Walls", "Avg score", "Prev week", "Hazardous", "Excellent", "Alerts", "Ack rate"])
     w.writerow([r["walls"], r["avgScore"], r["avgScorePrevWeek"], r["hazardousWalls"], r["excellentWalls"],

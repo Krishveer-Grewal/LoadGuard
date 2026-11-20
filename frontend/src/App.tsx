@@ -78,7 +78,7 @@ function Shell({ mode, setMode }: { mode: PaletteMode; setMode: (m: PaletteMode)
           {!wide && <IconButton edge="start" onClick={() => setOpen(true)} aria-label="menu"><MenuIcon /></IconButton>}
           <Stack direction="row" alignItems="center" spacing={1} component={Link} to="/" sx={{ color: "inherit", textDecoration: "none", flex: 1 }}>
             <img src="/icon.svg" width={28} height={28} alt="" />
-            <Typography variant="h6" sx={{ fontWeight: 800 }}>LoadGuard <Box component="span" sx={{ color: "primary.main" }}>AI</Box></Typography>
+            <Typography variant="h6" sx={{ fontWeight: 800 }}>Load<Box component="span" sx={{ color: "primary.main" }}>Guard</Box></Typography>
           </Stack>
           <Tooltip title={connected ? "Live updates connected" : "Reconnecting…"}>
             <Stack direction="row" alignItems="center" spacing={0.75} sx={{ mr: 1.5 }}>
