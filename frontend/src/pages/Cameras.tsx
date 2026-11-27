@@ -33,7 +33,10 @@ export default function Cameras() {
   const [err, setErr] = useState<string | null>(null);
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
 
+  const [demo, setDemo] = useState(false);
+
   useEffect(() => void api.get<Handler[]>("/api/handlers").then(setHandlers), []);
+  useEffect(() => void api.get<{ demoMode?: boolean }>("/api/health").then((h) => setDemo(!!h.demoMode)).catch(() => {}), []);
   const list = Object.values(trailers).sort((a, b) => a.door - b.door);
 
   const openEdit = (t: TrailerSummary) => {
@@ -71,7 +74,11 @@ export default function Cameras() {
   };
 
   const toggle = async (t: TrailerSummary) => {
-    await api.patch(`/api/trailers/${t.trailerId}`, { active: !t.active });
+    try {
+      await api.patch(`/api/trailers/${t.trailerId}`, { active: !t.active });
+    } catch {
+      /* rejected (e.g. read-only demo) */
+    }
     await refreshTrailers();
   };
 
@@ -82,8 +89,13 @@ export default function Cameras() {
           <Typography variant="h4">Trailers & cameras</Typography>
           <Typography color="text.secondary">Connect a camera per trailer: RTSP stream, webcam, recorded video, a handheld pushing frames, or the simulator.</Typography>
         </Box>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setEditing(false); setForm(blank); }}>Add trailer</Button>
+        <Button variant="contained" startIcon={<AddIcon />} disabled={demo} onClick={() => { setEditing(false); setForm(blank); }}>Add trailer</Button>
       </Stack>
+      {demo && (
+        <MuiAlert severity="info">
+          This is a public read-only demo, so adding, editing and deleting trailers is turned off. Every other page works as it would in production.
+        </MuiAlert>
+      )}
       <Paper variant="outlined" sx={{ overflowX: "auto" }}>
         <Table size="small">
           <TableHead>
@@ -100,10 +112,10 @@ export default function Cameras() {
                 <TableCell>{t.handler?.name ?? "–"}</TableCell>
                 <TableCell><StatusChip status={t.status} /></TableCell>
                 <TableCell>{t.latencyMs != null ? `${t.latencyMs.toFixed(0)} ms` : "–"}</TableCell>
-                <TableCell><Switch checked={t.active !== false} onChange={() => toggle(t)} /></TableCell>
+                <TableCell><Switch checked={t.active !== false} disabled={demo} onChange={() => toggle(t)} /></TableCell>
                 <TableCell sx={{ whiteSpace: "nowrap" }}>
-                  <Tooltip title="Edit"><IconButton onClick={() => openEdit(t)}><EditIcon /></IconButton></Tooltip>
-                  <Tooltip title="Delete"><IconButton onClick={() => setConfirmDel(t.trailerId)}><DeleteIcon /></IconButton></Tooltip>
+                  <Tooltip title="Edit"><span><IconButton disabled={demo} onClick={() => openEdit(t)}><EditIcon /></IconButton></span></Tooltip>
+                  <Tooltip title="Delete"><span><IconButton disabled={demo} onClick={() => setConfirmDel(t.trailerId)}><DeleteIcon /></IconButton></span></Tooltip>
                 </TableCell>
               </TableRow>
             ))}

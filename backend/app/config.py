@@ -46,6 +46,9 @@ class Settings(BaseSettings):
 
     cors_origins: str = "*"
 
+    # Public demo: block creating, editing and deleting trailers (there is no auth yet).
+    demo_mode: bool = False
+
 
 settings = Settings()
 settings.data_dir.mkdir(parents=True, exist_ok=True)

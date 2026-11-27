@@ -7,9 +7,9 @@ import warnings
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 
 from .api import alerts, analyze, trailers
 from .config import settings
@@ -53,10 +53,24 @@ app.include_router(trailers.router)
 app.include_router(analyze.router)
 app.include_router(alerts.router)
 
+DEMO_BLOCKED_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
+
+@app.middleware("http")
+async def demo_guard(request: Request, call_next):
+    """In demo mode, trailer configuration is read-only. Pushing frames to an existing
+    push-source trailer, acknowledging alerts and the Analyze page still work."""
+    path = request.url.path
+    if (settings.demo_mode and request.method in DEMO_BLOCKED_METHODS
+            and path.startswith("/api/trailers") and not path.endswith("/frames")):
+        return JSONResponse(status_code=403, content={
+            "detail": "This is a read-only demo: adding, editing and deleting trailers is disabled."})
+    return await call_next(request)
+
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "trailers": len(monitor.workers)}
+    return {"ok": True, "trailers": len(monitor.workers), "demoMode": settings.demo_mode}
 
 
 @app.websocket("/ws")

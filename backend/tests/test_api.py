@@ -62,3 +62,18 @@ def test_end_to_end_api():
 
         with client.websocket_connect("/ws") as ws:
             assert ws.receive_json()["type"] == "hello"
+
+
+def test_demo_mode_blocks_trailer_changes(monkeypatch):
+    from app.config import settings
+
+    monkeypatch.setattr(settings, "demo_mode", True)
+    with TestClient(app) as client:
+        assert client.get("/api/health").json()["demoMode"] is True
+        tid = client.get("/api/trailers").json()[0]["trailerId"]
+        assert client.post("/api/trailers", json={"id": "x1", "door": 200, "source_type": "simulator"}).status_code == 403
+        assert client.patch(f"/api/trailers/{tid}", json={"door": 999}).status_code == 403
+        assert client.delete(f"/api/trailers/{tid}").status_code == 403
+        assert len(client.get("/api/trailers").json()) == 6
+        # read-only endpoints and the analyze page keep working
+        assert client.post("/api/analyze/sample", data={"skill": "0.5"}).status_code == 200

@@ -1,3 +1,0 @@
-# New ReadME
-
-As a former package handler, I understand the importance of properly building "walls". In theory, it's easy enough to lay a foundation with heavy packages and tightly T-stack on top of that using load stands and team-lifts as needed to build a strong, safe wall. In practice, handlers will often get a little lazy many hours deep into their shift, and walls will start to look less pretty (and less safe). I've had many shifts extended because I've had to remove and re-stack packages in a trailer due to poor loading. It's both unsafe and unfair to other handlers, not to mention the efficiency cost.

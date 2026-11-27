@@ -4,22 +4,9 @@ LoadGuard watches package walls being built inside trailers. It works out each w
 
 It uses only **pre-trained** detection (no custom training). Most of the system's value is in the parts after detection: wall reconstruction, a rule-based structural engine, scoring, explainability, and the operational workflow around them.
 
-```
-Camera / RTSP / video / handheld ─▶ Video service ─▶ Detection engine ─▶ Wall modeling
-                                                     (YOLO11 + OpenCV)    (layers, seams,
-                                                                            support graph, voids)
-                                                                                 │
-                                       ┌─────────────────────────────────────────┤
-                                       ▼                                         ▼
-                                  Rule engine (6 rules)                  Risk model (logistic)
-                                       └──────────────┬──────────────────────────┘
-                                                      ▼
-                                   Explanation layer (what / why / risk / fix)
-                                                      ▼
-                         REST API + WebSocket ─▶ Manager dashboard · Handler app (Zebra)
-                                                      ▼
-                                            PostgreSQL (history, alerts)
-```
+## Architecture
+
+![LoadGuard high-level design: frame sources feed per-trailer worker threads, which run the five-stage analysis pipeline (detection, wall reconstruction, rule engine, scoring, explanation); results flow through the alert engine, WebSocket hub and REST API to the manager dashboard and handler app, with PostgreSQL storing history.](docs/loadguard_hld.png)
 
 ## Quick start
 
@@ -35,6 +22,17 @@ docker compose up --build
 - API docs (OpenAPI): http://localhost:8000/docs
 
 On first boot the system creates 6 simulated trailers (doors 101–106) and 8 fictional handlers. It then backfills 21 days of history by running the real pipeline over simulated walls, so the analytics pages have data straight away. Set `INSTALL_YOLO=false` for a slim image that uses the classical detector only.
+
+### Public demo server (HTTPS)
+
+On a Linux server with Docker and a domain (or `<name>.<ip-with-dashes>.sslip.io`) pointing at it:
+
+```bash
+cp .env.example .env    # set DOMAIN and a strong POSTGRES_PASSWORD
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+Caddy serves the app at `https://$DOMAIN` with an automatic Let's Encrypt certificate (HTTPS is also what lets the Handler app use a phone camera). Only ports 80 and 443 are exposed. API docs are at `https://$DOMAIN/docs`. `LG_DEMO_MODE=true` (the default in this overlay) makes trailer configuration read-only, because there is no login yet.
 
 ### Local development (SQLite, no Docker)
 

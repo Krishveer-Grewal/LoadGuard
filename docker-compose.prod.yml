@@ -1,0 +1,36 @@
+# Production overlay for a public server:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Only Caddy is reachable from outside (80/443, HTTPS); backend and frontend stay internal.
+services:
+  db:
+    restart: unless-stopped
+
+  backend:
+    restart: unless-stopped
+    ports: !reset []
+    environment:
+      LG_DEMO_MODE: ${LG_DEMO_MODE:-true}
+      LG_ANALYSIS_FPS: ${LG_ANALYSIS_FPS:-2}
+
+  frontend:
+    restart: unless-stopped
+    ports: !reset []
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env, e.g. loadguard.203-0-113-7.sslip.io}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
